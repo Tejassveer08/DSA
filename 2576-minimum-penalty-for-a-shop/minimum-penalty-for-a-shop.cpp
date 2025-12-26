@@ -1,31 +1,32 @@
 class Solution {
 public:
-    int bestClosingTime(string customers) {
-        int n = customers.size();
-        
-        int suffixY = 0;
-        for (char c : customers)
-            if (c == 'Y') suffixY++;
+    int bestClosingTime(string c) {
+        int LN = 0;
+        int totaly = 0;
 
-        int prefixN = 0;
-        int minPenalty = suffixY;
-        int bestHour = 0;
-
-        for (int j = 1; j <= n; j++) {
-
-            if (customers[j - 1] == 'Y')
-                suffixY--;
-            else
-                prefixN++;
-
-            int penalty = prefixN + suffixY;
-
-            if (penalty < minPenalty) {
-                minPenalty = penalty;
-                bestHour = j;
-            }
+        for(int i = 0;i<c.size();i++) {
+            totaly += (c[i] == 'Y');
         }
 
-        return bestHour;
+        int Y = 0;
+        int mpen = INT_MAX;
+        int ans = 0;
+        for(int i = 0;i<c.size();i++) {
+            int RY = totaly-Y;
+            int penalty = RY + LN;
+            if (penalty < mpen) {
+                ans = i;
+                mpen = penalty;
+            }
+            Y += (c[i] == 'Y');
+            LN += (c[i] == 'N');
+        }
+        int RY = totaly-Y;
+        int penalty = RY + LN;
+        if (penalty < mpen) {
+            ans = c.size();
+            mpen = penalty;
+        }
+        return ans;
     }
 };
