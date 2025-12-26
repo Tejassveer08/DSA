@@ -1,32 +1,16 @@
 class Solution {
 public:
-    int bestClosingTime(string c) {
-        int LN = 0;
-        int totaly = 0;
-
-        for(int i = 0;i<c.size();i++) {
-            totaly += (c[i] == 'Y');
-        }
-
-        int Y = 0;
-        int mpen = INT_MAX;
-        int ans = 0;
-        for(int i = 0;i<c.size();i++) {
-            int RY = totaly-Y;
-            int penalty = RY + LN;
-            if (penalty < mpen) {
-                ans = i;
-                mpen = penalty;
+    int bestClosingTime(string customers) {
+         int max_score=0,score=0,besthour=-1;
+         for(int i=0;i<customers.size();i++)
+         {
+            score+=(customers[i]=='Y')?1:-1;
+            if(score>max_score)
+            {
+                max_score=score;
+                besthour=i;
             }
-            Y += (c[i] == 'Y');
-            LN += (c[i] == 'N');
-        }
-        int RY = totaly-Y;
-        int penalty = RY + LN;
-        if (penalty < mpen) {
-            ans = c.size();
-            mpen = penalty;
-        }
-        return ans;
+         }
+         return besthour+1;
     }
 };
