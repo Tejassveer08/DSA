@@ -3,44 +3,31 @@ public:
     int mostBooked(int n, vector<vector<int>>& meetings) {
         sort(meetings.begin(), meetings.end());
 
-        priority_queue<int, vector<int>, greater<int>> freeRooms;
-        for (int i = 0; i < n; i++)
-            freeRooms.push(i);
+        priority_queue<int, vector<int>, greater<int>> free;
+        priority_queue<pair<long long,int>, vector<pair<long long,int>>, greater<>> busy;
+        vector<int> cnt(n);
 
-        priority_queue<pair<long long, int>,
-            vector<pair<long long, int>>,
-            greater<pair<long long, int>>> busyRooms;
+        for (int i = 0; i < n; i++) free.push(i);
 
-        vector<int> count(n, 0);
+        for (auto &m : meetings) {
+            long long s = m[0], d = m[1] - m[0];
 
-        for (auto& m : meetings) {
-            long long start = m[0], end = m[1];
-            long long duration = end - start;
-
-            while (!busyRooms.empty() && busyRooms.top().first <= start) {
-                freeRooms.push(busyRooms.top().second);
-                busyRooms.pop();
+            while (!busy.empty() && busy.top().first <= s) {
+                free.push(busy.top().second);
+                busy.pop();
             }
 
-            if (!freeRooms.empty()) {
-                int room = freeRooms.top();
-                freeRooms.pop();
-                busyRooms.push({end, room});
-                count[room]++;
+            if (!free.empty()) {
+                int r = free.top(); free.pop();
+                busy.push({m[1], r});
+                cnt[r]++;
             } else {
-
-                auto [freeTime, room] = busyRooms.top();
-                busyRooms.pop();
-                busyRooms.push({freeTime + duration, room});
-                count[room]++;
+                auto [t, r] = busy.top(); busy.pop();
+                busy.push({t + d, r});
+                cnt[r]++;
             }
         }
 
-        int ans = 0;
-        for (int i = 1; i < n; i++) {
-            if (count[i] > count[ans])
-                ans = i;
-        }
-        return ans;
+        return max_element(cnt.begin(), cnt.end()) - cnt.begin();
     }
 };
