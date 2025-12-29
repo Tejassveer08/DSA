@@ -1,46 +1,59 @@
 class Solution {
 public:
-    unordered_map<string, vector<char>> mp;
-    unordered_set<string> failed;
+    vector<string> gen_neighbor(const string& node,
+                                unordered_map<string, unordered_set<char>>& mp) {
+        vector<string> res{""};
+        int n = node.size();
+
+        for (int i = 1; i < n; i++) {
+            string key;
+            key.push_back(node[i - 1]);
+            key.push_back(node[i]);
+
+            if (mp.count(key) == 0) {
+                return {};
+            }
+
+            vector<string> newRes;
+            for (const string& a : res) {
+                for (char c : mp[key]) {
+                    newRes.push_back(a + c);
+                }
+            }
+            res.swap(newRes);
+        }
+        return res;
+    }
 
     bool pyramidTransition(string bottom, vector<string>& allowed) {
-        for (auto& s : allowed) {
-            mp[s.substr(0, 2)].push_back(s[2]);
+        unordered_map<string, unordered_set<char>> mp;
+        for (const string& s : allowed) {
+            string key;
+            key.push_back(s[0]);
+            key.push_back(s[1]);
+            mp[key].insert(s[2]);
         }
-        return dfs(bottom);
-    }
 
-    bool dfs(string row) {
-        if (row.size() == 1)
-            return true;
+        unordered_set<string> visited;
 
-        if (failed.count(row))
-            return false;
-
-        vector<string> nextRows;
-        buildNext(row, 0, "", nextRows);
-
-        for (auto& next : nextRows) {
-            if (dfs(next))
+        function<bool(const string&)> dfs = [&](const string& node) -> bool {
+            if (node.size() == 1) {
                 return true;
-        }
+            }
+            if (visited.count(node)) {
+                return false;
+            }
 
-        failed.insert(row);
-        return false;
-    }
+            for (const string& nxt : gen_neighbor(node, mp)) {
+                if (dfs(nxt)) {
+                    return true;
+                }
+            }
 
-    void buildNext(string& row, int idx, string curr, vector<string>& res) {
-        if (idx == row.size() - 1) {
-            res.push_back(curr);
-            return;
-        }
+            visited.insert(node);
+            return false;
+        };
 
-        string key = row.substr(idx, 2);
-        if (!mp.count(key))
-            return;
-
-        for (char c : mp[key]) {
-            buildNext(row, idx + 1, curr + c, res);
-        }
+        return dfs(bottom);
     }
 };
