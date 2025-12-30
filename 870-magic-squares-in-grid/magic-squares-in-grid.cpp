@@ -16,13 +16,11 @@ public:
 
 private:
     bool isMagic(vector<vector<int>>& g, int r, int c) {
-        // Center must be 5
         if (g[r + 1][c + 1] != 5)
             return false;
 
         vector<bool> seen(10, false);
 
-        // Check numbers are 1–9 and distinct
         for (int i = r; i < r + 3; i++) {
             for (int j = c; j < c + 3; j++) {
                 int v = g[i][j];
@@ -32,7 +30,6 @@ private:
             }
         }
 
-        // Check rows and columns
         for (int i = 0; i < 3; i++) {
             if (g[r + i][c] + g[r + i][c + 1] + g[r + i][c + 2] != 15)
                 return false;
@@ -40,7 +37,6 @@ private:
                 return false;
         }
 
-        // Check diagonals
         if (g[r][c] + g[r + 1][c + 1] + g[r + 2][c + 2] != 15)
             return false;
         if (g[r][c + 2] + g[r + 1][c + 1] + g[r + 2][c] != 15)
